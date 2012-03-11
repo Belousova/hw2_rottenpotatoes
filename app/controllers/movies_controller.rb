@@ -9,13 +9,14 @@ class MoviesController < ApplicationController
   def index
     #@all_ratings = ['G','PG','PG-13','R']
     get_ratings
+    flash[:p_ratings]=params[:ratings]
+    flash[:p_sort_by] = params[:sort_by]
     if params.has_key?(:ratings)
       params[:ratings].keys.map{|x| @checked_boxes[x] = true}
-      @movies = Movie.where(:rating => params[:ratings].keys)
-      flash[:p_ratings]=params[:ratings]      
+      @movies = Movie.where(:rating => params[:ratings].keys)      
     end
     if params.has_key?(:sort_by)
-      flash[:p_sort_by] = params[:sort_by]   
+   
       if params[:sort_by] == 'title'
         @set_hilite_title='hilite'
       end
