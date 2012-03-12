@@ -9,30 +9,44 @@ class MoviesController < ApplicationController
   def index
     #@all_ratings = ['G','PG','PG-13','R']
     get_ratings
-    flash[:p_ratings]=params[:ratings]
-    flash[:p_sort_by] = params[:sort_by]
-    if params.has_key?(:ratings)
-      params[:ratings].keys.map{|x| @checked_boxes[x] = true}
-      @movies = Movie.where(:rating => params[:ratings].keys)      
-    end
-    if params.has_key?(:sort_by)
+    unless (session.has_key?(:ratings)&&session.has_key?(:sort_by))
    
-      if params[:sort_by] == 'title'
-        @set_hilite_title='hilite'
+      session[:ratings] = params[:ratings]
+      session[:sort_by] = params[:sort_by]
+
+      if params.has_key?(:ratings)
+       params[:ratings].keys.map{|x| @checked_boxes[x] = true}
+       @movies = Movie.where(:rating => params[:ratings].keys)      
       end
-      if params[:sort_by] =='release_date'
-        @set_hilite_date='hilite'
+      if params.has_key?(:sort_by)
+   
+        if params[:sort_by] == 'title'
+          @set_hilite_title='hilite'
+        end
+        if params[:sort_by] =='release_date'
+          @set_hilite_date='hilite'
+        end
+        unless params[:sort_by].nil? || params[:sort_by].empty?
+          if @movies.nil?
+            @movies = Movie.order "#{params[:sort_by]} ASC"
+          else
+            @movies = @movies.order "#{params[:sort_by]} ASC" 
+          end
+        end 
       end
-      unless params[:sort_by].nil? || params[:sort_by].empty?
       if @movies.nil?
-        @movies = Movie.order "#{params[:sort_by]} ASC"
-      else
-        @movies = @movies.order "#{params[:sort_by]} ASC" 
+        @movies = Movie.all
       end
-      end 
-    end
-    if @movies.nil?
-      @movies = Movie.all
+    else
+      unless params.has_key?(:ratings)
+        params[:ratings] = session[:ratings]  
+      end
+      unless params.has_key?(:sort_by)
+        params[:sort_by] = session[:sort_by]
+      end
+      session.delete(:ratings)
+      session.delete(:sort_by)
+      redirect_to movies_path :sort_by => params[:sort_by], :ratings => params[:ratings]
     end
   end
 

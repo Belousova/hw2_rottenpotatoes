@@ -1,8 +1,8 @@
 -#  This file is app/views/movies/index.html.haml
 %h1 All Movies
-= form_tag movies_path(:sort_by => flash[:p_sort_by]), :method => :get do
+= form_tag movies_path, :method => :get do
   Include: 
-  = hidden_field_tag :sort_by, flash[:p_sort_by] 
+  = hidden_field_tag :sort_by, session[:sort_by] 
   - @all_ratings.each do |rating|
     = rating
     = check_box_tag "ratings[#{rating}]", 1, @checked_boxes[rating]
@@ -12,10 +12,10 @@
   %thead
     %tr
       %th{:class=>@set_hilite_title}
-        %a#title_header{:href=> movies_path(:sort_by => 'title', :ratings => flash[:p_ratings])} Movie Title
+        %a#title_header{:href=> movies_path(:sort_by => 'title', :ratings => session[:ratings])} Movie Title
       %th Rating
       %th{:class=>@set_hilite_date}
-        %a#release_date_header{:href => movies_path(:sort_by => 'release_date', :ratings => flash[:p_ratings])} Release Date
+        %a#release_date_header{:href => movies_path(:sort_by => 'release_date', :ratings => session[:ratings])} Release Date
       %th More Info
   %tbody
     - @movies.each do |movie|
